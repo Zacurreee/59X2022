@@ -8,6 +8,7 @@
 #define RGPort 11
 #define CRPort 12
 #define BRPort 13
+#define ImuPort 15
 
 // Mech Ports
 #define RAPort 14

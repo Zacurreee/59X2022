@@ -16,6 +16,8 @@ void initialize() {
 	Motor BR(BRPort, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 	Motor LA(LAPort, E_MOTOR_GEARSET_18, true, E_MOTOR_ENCODER_DEGREES);
 	Motor RA(RAPort, E_MOTOR_GEARSET_18, false, E_MOTOR_ENCODER_DEGREES);
+	Imu Inertial(ImuPort);
+	Inertial.reset();
 
 	// Pneumatic init
 	ADIDigitalOut tilt(tiltPort);
@@ -123,10 +125,9 @@ void opcontrol() {
 
 		if (master.get_digital_new_press(DIGITAL_R2)){tiltSwitch();}
 		if (master.get_digital_new_press(DIGITAL_R1)){armtiltSwitch();}
-		if (master.get_digital_new_press(DIGITAL_L1)){
-			armSwitch();
-		}else if (master.get_digital_new_press(DIGITAL_L2)){
-			scored();
-		}
+		if (master.get_digital_new_press(DIGITAL_L1) && armPos < 2) setArmPos(3);
+			else if (master.get_digital_new_press(DIGITAL_L1) && armPos > 2)setArmPos(0);
+			else if (master.get_digital_new_press(DIGITAL_L2) && armPos > 2)setArmPos(2);
+			else if (master.get_digital_new_press(DIGITAL_L2) && armPos == 2)setArmPos(3);
 	}
 }

@@ -4,10 +4,9 @@
 void armControl(void*ignore);
 void setArmPos(int pos);
 void armtiltSwitch();
-void armSwitch();
 
 
-void scored();
+
 // tilter function
 void tiltControl(void*ignore);
 void tiltSwitch();
