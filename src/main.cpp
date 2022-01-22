@@ -1,4 +1,5 @@
 #include "main.h"
+#include "autonSets.hpp"
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -26,6 +27,10 @@ void initialize() {
 
  	Task armControlTask(armControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Arm Control Task");
 	Task tilterTask(tiltControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Tilter Task");
+	Task debugTask(Debug, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT, "Debug Task");
+	Task odometryTask(Odometry, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT);
+	Task sensorsTask(Sensors, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT);
+	Task controlTask(Control, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT);
 }
 
 /**
@@ -57,7 +62,26 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	baseMove(-7);
+	waitBase(1000);
+	tiltSwitch();
+	waitBase(1000);
+	delay(10);
+	baseMove(18);
+	waitBase(1000);
+	baseTurn(100);
+	waitBase(1000);
+	delay(500);
+	baseMove(46);
+	waitBase(2000);
+	delay(10);
+	armtiltSwitch();
+	waitBase(1000);
+	baseTurn(-20, 2, 0);
+
+
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -125,9 +149,7 @@ void opcontrol() {
 
 		if (master.get_digital_new_press(DIGITAL_R2)){tiltSwitch();}
 		if (master.get_digital_new_press(DIGITAL_R1)){armtiltSwitch();}
-		if (master.get_digital_new_press(DIGITAL_L1) && armPos < 2) setArmPos(3);
-			else if (master.get_digital_new_press(DIGITAL_L1) && armPos > 2)setArmPos(0);
-			else if (master.get_digital_new_press(DIGITAL_L2) && armPos > 2)setArmPos(2);
-			else if (master.get_digital_new_press(DIGITAL_L2) && armPos == 2)setArmPos(3);
+		if (master.get_digital_new_press(DIGITAL_L1)){armState();}
+		if (master.get_digital_new_press(DIGITAL_L2)){scorestate();}
 	}
 }

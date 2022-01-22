@@ -10,7 +10,8 @@ void armtiltSwitch();
 // tilter function
 void tiltControl(void*ignore);
 void tiltSwitch();
-
+void armState();
+void scorestate();
 
 
 #endif

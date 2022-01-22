@@ -1,11 +1,11 @@
 #include "main.h"
-#define DEFAULT_KP 0.25
-#define DEFAULT_KD 0.0
-#define DEFAULT_TURN_KP 1.35
-#define DEFAULT_TURN_KD 0.0
+#define DEFAULT_KP 0.29
+#define DEFAULT_KD 0.15
+#define DEFAULT_TURN_KP 1.42
+#define DEFAULT_TURN_KD 0
 #define RAMPING_POW 1.2
-#define DISTANCE_LEEWAY 15
-#define BEARING_LEEWAY 1.5
+#define DISTANCE_LEEWAY 5
+#define BEARING_LEEWAY 0.5
 #define MAX_POW 120
 
 double targEncdL = 0, targEncdR = 0, targBearing = 0;
@@ -71,8 +71,8 @@ void waitBase(double cutoff){
   if(turnMode) {
     while(fabs(targBearing - bearing) > BEARING_LEEWAY && (millis()-start) < cutoff) delay(20);
   }else{
-    while((fabs(targEncdL - encdL) > DISTANCE_LEEWAY || fabs(targEncdR - encdR) > DISTANCE_LEEWAY) && (millis()-start) < cutoff) delay(20);
-  }
+    while((fabs(targEncdL - encdL) > DISTANCE_LEEWAY || fabs(targEncdR - encdR) > DISTANCE_LEEWAY) && (millis()-start)< cutoff) delay(20);
+}
 
   targEncdL = encdL;
   targEncdR = encdR;
@@ -123,7 +123,7 @@ void Control(void * ignore){
     }
     LGB.move(powerL);
     CL.move(powerL);
-    BL.move(powerR);
+    BL.move(powerL);
     RGB.move(powerR);
     CR.move(powerR);
     BR.move(powerR);
