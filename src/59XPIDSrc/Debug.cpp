@@ -1,5 +1,5 @@
 #include "main.h"
-int DEBUG_MODE = 3;
+int DEBUG_MODE = 0;
 void printPosMaster(){
   Controller master(E_CONTROLLER_MASTER);
   Imu Inertial (ImuPort);
@@ -22,6 +22,10 @@ void printTargPowerTerminal(){
 void printPowerTerminal(){
   printf("powerL: %.2f powerR: %.2f\n", powerL, powerR);
 }
+
+void printVelocity(){
+  printf("measuredVL: %.5f, measuredVR %.5f\n", measuredVL, measuredVR);
+}
 void Debug(void * ignore){
   Imu Inertial (ImuPort);
   while(true){
@@ -35,6 +39,7 @@ void Debug(void * ignore){
         case 3: printErrorTerminal(); break;
         case 4: printTargPowerTerminal(); break;
         case 5: printPowerTerminal(); break;
+        case 6: printVelocity(); break;
       }
     }
     delay(50);

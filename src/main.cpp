@@ -63,24 +63,44 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	baseMove(-7);
-	waitBase(1000);
-	tiltSwitch();
-	waitBase(1000);
-	delay(10);
-	baseMove(18);
-	waitBase(1000);
-	baseTurn(100);
-	waitBase(1000);
-	delay(500);
-	baseMove(46);
-	waitBase(2000);
-	delay(10);
-	armtiltSwitch();
-	waitBase(1000);
-	baseTurn(-20, 2, 0);
-
-
+	baseMove(30);
+	delay(300);
+	waitBase(1000000);
+	// baseMove(-7);
+	// waitBase(1000);
+	// tiltSwitch();
+	// waitBase(1000);
+	// delay(10);
+	// baseMove(18);
+	// waitBase(1000);
+	// baseTurn(100);
+	// waitBase(1000);
+	// delay(400);
+	// baseMove(46);
+	// waitBase(2000);
+	// delay(10);
+	// armtiltSwitch();
+	// waitBase(1000);
+	// baseTurn(120);
+	// delay(10);
+	// waitBase(1000);
+	// armState();
+	// baseMove(50);
+	// waitBase(2000);
+	// baseTurn()
+	// delay(10);
+	// scoreState();
+	// waitBase(1000);
+	// armtiltSwitch();
+	// scoreState();
+	// baseMove(-5);
+	// waitBase(1000);
+	// baseTurn(290);
+	// waitBase(1000);
+	// tiltSwitch();
+	// armState();
+	// waitBase(1000);
+	// baseMove(20);
 }
 
 /**
@@ -123,7 +143,10 @@ void opcontrol() {
 
 	int armPos = 0;
 	bool tankDrive = true;
+	bool preset = true;
 	LA.tare_position();
+
+
 
 	while(true) {
 		double left, right;
@@ -150,6 +173,7 @@ void opcontrol() {
 		if (master.get_digital_new_press(DIGITAL_R2)){tiltSwitch();}
 		if (master.get_digital_new_press(DIGITAL_R1)){armtiltSwitch();}
 		if (master.get_digital_new_press(DIGITAL_L1)){armState();}
-		if (master.get_digital_new_press(DIGITAL_L2)){scorestate();}
-	}
+		if (master.get_digital_new_press(DIGITAL_L2)){scoreState();}
+		if (master.get_digital_new_press(DIGITAL_X)){tallestRings();}
+		}
 }

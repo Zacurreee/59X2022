@@ -15,8 +15,8 @@ void Sensors(void * ignore){
       encdR = CR.get_position();
       bearing = Inertial.get_rotation();
       angle = halfPI - bearing * toRad;
-      measuredVL = (CL.get_actual_velocity());
-      measuredVR = (CR.get_actual_velocity());
+      measuredVL = ((LGB.get_actual_velocity() + CL.get_actual_velocity() + BL.get_actual_velocity())/ 3);
+      measuredVR = ((RGB.get_actual_velocity() + CR.get_actual_velocity() + BR.get_actual_velocity())/ 3);
       measuredV = (measuredVL + measuredVR)/2;
     }
     delay(5);

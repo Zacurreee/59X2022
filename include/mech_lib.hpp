@@ -6,12 +6,11 @@ void setArmPos(int pos);
 void armtiltSwitch();
 
 
-
 // tilter function
 void tiltControl(void*ignore);
 void tiltSwitch();
 void armState();
-void scorestate();
-
+void scoreState();
+void tallestRings();
 
 #endif

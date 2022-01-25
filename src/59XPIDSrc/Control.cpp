@@ -1,11 +1,12 @@
 #include "main.h"
 #define DEFAULT_KP 0.29
 #define DEFAULT_KD 0.15
-#define DEFAULT_TURN_KP 1.42
-#define DEFAULT_TURN_KD 0
-#define RAMPING_POW 1.2
-#define DISTANCE_LEEWAY 5
+#define DEFAULT_TURN_KP 1.44
+#define DEFAULT_TURN_KD 0.15
+#define RAMPING_POW 1.5
+#define DISTANCE_LEEWAY 10
 #define BEARING_LEEWAY 0.5
+#define STOP_VEL 5.0
 #define MAX_POW 120
 
 double targEncdL = 0, targEncdR = 0, targBearing = 0;
@@ -69,10 +70,13 @@ void unPauseBase() {
 void waitBase(double cutoff){
 	double start = millis();
   if(turnMode) {
-    while(fabs(targBearing - bearing) > BEARING_LEEWAY && (millis()-start) < cutoff) delay(20);
+    while(fabs(targBearing - bearing) > BEARING_LEEWAY || (millis()-start) < cutoff) delay(20);
   }else{
-    while((fabs(targEncdL - encdL) > DISTANCE_LEEWAY || fabs(targEncdR - encdR) > DISTANCE_LEEWAY) && (millis()-start)< cutoff) delay(20);
-}
+    while((fabs(targEncdL - encdL) > DISTANCE_LEEWAY || fabs(targEncdR - encdR) > DISTANCE_LEEWAY || fabs(measuredV) > STOP_VEL)&& millis() - start < cutoff) {
+      delay(20);
+      printf("stop :%d, %d, %d\n", fabs(targEncdL - encdL) > DISTANCE_LEEWAY, fabs(targEncdR - encdR) > DISTANCE_LEEWAY, fabs(measuredV) > STOP_VEL);
+    }
+  }
 
   targEncdL = encdL;
   targEncdR = encdR;

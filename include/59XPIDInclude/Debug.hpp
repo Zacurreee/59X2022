@@ -6,4 +6,5 @@ void printPosMaster();
 void printEncdTerminal();
 void printErrorTerminal();
 void printPowerTerminal();
+void printVelocity();
 #endif
