@@ -4,7 +4,7 @@
 void armControl(void*ignore);
 void setArmPos(int pos);
 void armtiltSwitch();
-
+void armclampControl(void*ignore);
 
 // tilter function
 void tiltControl(void*ignore);
@@ -12,5 +12,4 @@ void tiltSwitch();
 void armState();
 void scoreState();
 void tallestRings();
-
 #endif

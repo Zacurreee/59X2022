@@ -1,11 +1,11 @@
 #include "main.h"
-#define DEFAULT_KP 0.29
-#define DEFAULT_KD 0.15
-#define DEFAULT_TURN_KP 1.44
-#define DEFAULT_TURN_KD 0.15
-#define RAMPING_POW 1.5
-#define DISTANCE_LEEWAY 10
-#define BEARING_LEEWAY 0.5
+#define DEFAULT_KP 0.46
+#define DEFAULT_KD 0.3
+#define DEFAULT_TURN_KP 1.9
+#define DEFAULT_TURN_KD 0.0
+#define RAMPING_POW 5
+#define DISTANCE_LEEWAY 7
+#define BEARING_LEEWAY 2
 #define STOP_VEL 5.0
 #define MAX_POW 120
 
@@ -68,13 +68,16 @@ void unPauseBase() {
 }
 
 void waitBase(double cutoff){
+  delay(200);
 	double start = millis();
   if(turnMode) {
-    while(fabs(targBearing - bearing) > BEARING_LEEWAY || (millis()-start) < cutoff) delay(20);
+    while(fabs((targBearing - bearing) > BEARING_LEEWAY || fabs(measuredVL) > STOP_VEL || fabs(measuredVR) > STOP_VEL) && millis()-start < cutoff) {
+      delay(20);
+      // printf("stop :%.2f, %d, %d\n", (targBearing-bearing), fabs(measuredVL) > STOP_VEL, fabs(measuredVR) > STOP_VEL);
+    }
   }else{
     while((fabs(targEncdL - encdL) > DISTANCE_LEEWAY || fabs(targEncdR - encdR) > DISTANCE_LEEWAY || fabs(measuredV) > STOP_VEL)&& millis() - start < cutoff) {
       delay(20);
-      printf("stop :%d, %d, %d\n", fabs(targEncdL - encdL) > DISTANCE_LEEWAY, fabs(targEncdR - encdR) > DISTANCE_LEEWAY, fabs(measuredV) > STOP_VEL);
     }
   }
 
@@ -103,6 +106,9 @@ void Control(void * ignore){
         targPowerR = -targPowerL;
 
         prevErrorBearing = errorBearing;
+
+        powerL = targPowerL;
+        powerR = targPowerR;
       }else{
         errorEncdL = targEncdL - encdL;
         errorEncdR = targEncdR - encdR;
@@ -115,12 +121,12 @@ void Control(void * ignore){
 
         prevErrorEncdL = errorEncdL;
         prevErrorEncdR = errorEncdR;
-      }
 
-      double deltaPowerL = targPowerL - powerL;
-      powerL += abscap(deltaPowerL, RAMPING_POW);
-      double deltaPowerR = targPowerR - powerR;
-      powerR += abscap(deltaPowerR, RAMPING_POW);
+        double deltaPowerL = targPowerL - powerL;
+        powerL += abscap(deltaPowerL, RAMPING_POW);
+        double deltaPowerR = targPowerR - powerR;
+        powerR += abscap(deltaPowerR, RAMPING_POW);
+      }
 
       powerL = abscap(powerL, MAX_POW);
       powerR = abscap(powerR, MAX_POW);
@@ -141,7 +147,7 @@ void resetCoords(double x, double y){
 	Motor BL(BLPort);
 	Motor RGB(RGPort);
 	Motor CR(CRPort);
-	Motor BR(BRPort);
+	Motor BR (BRPort);
 
   LGB.tare_position();
   CL.tare_position();

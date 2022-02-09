@@ -31,6 +31,9 @@ void initialize() {
 	Task odometryTask(Odometry, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT);
 	Task sensorsTask(Sensors, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT);
 	Task controlTask(Control, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT);
+	Task armclampControlTask(armclampControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT);
+	CL.tare_position();
+	CR.tare_position();
 }
 
 /**
@@ -63,44 +66,134 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	baseMove(30);
+	double start = millis();
+
+	// start of auton
+		//grab 1st goal
+	baseMove(-7);
+	waitBase(1000);
+	tiltSwitch();
+	delay(1000);
+	baseMove(18);
+	waitBase(1000);
+	baseTurn(95);
+	waitBase(1000);
+	baseMove(45);
+	waitBase(2000);
+	delay(10);
+	armtiltSwitch();
+	waitBase(1000);
+
+		//score 1st goal
+	baseTurn(118);
+	delay(10);
+	waitBase(1000);
+	armState();
+	baseMove(61, 0.48, 0.3);
+	waitBase(2300);
+	baseTurn(78);
+	waitBase(3000);
+	scoreState();
 	delay(300);
-	waitBase(1000000);
-	// baseMove(-7);
-	// waitBase(1000);
+	armtiltSwitch();
+	delay(200);
+	scoreState();
+	baseMove(-10, 0.45, 0.4);
+
+	// grab 2nd goal
+	waitBase(1500);
+	baseTurn(-102, 2, 0);
+	waitBase(1500);
+	tiltSwitch();
+	armState();
+	delay(600);
+	baseMove(15, 0.4, 0.4);
+	waitBase(1500);
+	delay(10);
+	armtiltSwitch();
+
+	// score 2nd goal
+	baseTurn(-133);
+	waitBase(1500);
+ 	baseMove(44);
+	waitBase(3000);
+	baseTurn(-10);
+	waitBase(2000);
+	armtiltSwitch();
+
+	// grab 3rd goal
+	baseMove(-29);
+	waitBase(2000);
+	tiltSwitch();
+	delay(10);
+	baseMove(17);
+	waitBase(2000);
+	baseTurn(80);
+	waitBase(2000);
+
+	// grab 4th goal
+	baseMove(23);
+	waitBase(2000);
+	delay(10);
+	armtiltSwitch();
+	waitBase(2000);
+	armState();
+	baseTurn(49);
+
+	//score 4th goal
+	waitBase(2000);
+	baseMove(56);
+	waitBase(2000);
+	scoreState();
+	delay(300);
+	armtiltSwitch();
+	delay(30);
+	scoreState();
+
+	baseMove(-10);
+	waitBase(2000);
+	armState();
+	baseTurn(-9);
+	waitBase(2000);
+	baseMove(28);
+	waitBase(2000);
+	armtiltSwitch();
+	delay(100);
+	armState();
+	delay(100);
+	baseTurn(84);
+	waitBase(2000);
+	baseMove(5);
+	waitBase(2000);
+	delay(200);
+	armtiltSwitch();
+	delay(200);
+	baseMove(-5);
+	waitBase(2000);
+	baseTurn(-9);
+	waitBase(2000);
 	// tiltSwitch();
-	// waitBase(1000);
-	// delay(10);
-	// baseMove(18);
-	// waitBase(1000);
-	// baseTurn(100);
-	// waitBase(1000);
-	// delay(400);
-	// baseMove(46);
+	// delay(200);
+	// baseTurn();
 	// waitBase(2000);
-	// delay(10);
-	// armtiltSwitch();
-	// waitBase(1000);
-	// baseTurn(120);
-	// delay(10);
-	// waitBase(1000);
-	// armState();
-	// baseMove(50);
+	// baseMove();
 	// waitBase(2000);
-	// baseTurn()
-	// delay(10);
-	// scoreState();
-	// waitBase(1000);
-	// armtiltSwitch();
-	// scoreState();
-	// baseMove(-5);
-	// waitBase(1000);
-	// baseTurn(290);
-	// waitBase(1000);
 	// tiltSwitch();
+	// delay(200);
+	// baseMove();
+	// waitBase();
+	// armtiltSwitch();
+	// delay(200);
 	// armState();
-	// waitBase(1000);
-	// baseMove(20);
+	// delay(200);
+	// baseTurn();
+	// waitBase(2000);
+	// scoreState();
+	// delay(200);
+	// armtiltSwitch();
+	// delay(100);
+
+	printf("program finished in %.2fs", millis() - start);
 }
 
 /**
@@ -129,6 +222,7 @@ void opcontrol() {
 	ADIDigitalOut tilt(tiltPort);
 	ADIDigitalOut tiltClamp(tiltClampPort);
 	ADIDigitalOut armClamp(armClampPort);
+	Task armcontrolTask(armControl, (void*)"PROS", TASK_PRIORITY_DEFAULT, TASK_STACK_DEPTH_DEFAULT);
 
 	LGB.set_brake_mode(E_MOTOR_BRAKE_BRAKE);
 	CL.set_brake_mode(E_MOTOR_BRAKE_BRAKE);
@@ -170,10 +264,29 @@ void opcontrol() {
 		CR.move(right);
  		BR.move(right);
 
-		if (master.get_digital_new_press(DIGITAL_R2)){tiltSwitch();}
-		if (master.get_digital_new_press(DIGITAL_R1)){armtiltSwitch();}
-		if (master.get_digital_new_press(DIGITAL_L1)){armState();}
-		if (master.get_digital_new_press(DIGITAL_L2)){scoreState();}
-		if (master.get_digital_new_press(DIGITAL_X)){tallestRings();}
+		if (master.get_digital_new_press(DIGITAL_A)){preset = !preset;}
+
+		if (preset){
+			armcontrolTask.resume();
+			if (master.get_digital_new_press(DIGITAL_R2)){tiltSwitch();}
+			if (master.get_digital_new_press(DIGITAL_R1)){armtiltSwitch();}
+			if (master.get_digital_new_press(DIGITAL_L1)){armState();}
+			if (master.get_digital_new_press(DIGITAL_L2)){scoreState();}
+			if (master.get_digital_new_press(DIGITAL_X)){tallestRings();}
+		} else {
+			armcontrolTask.suspend();
+			if (master.get_digital_new_press(DIGITAL_R2)){tiltSwitch();}
+			if (master.get_digital_new_press(DIGITAL_R1)){armtiltSwitch();}
+			if(master.get_digital(DIGITAL_L1)){
+				LA.move(127);
+				RA.move(127);
+			} else if (master.get_digital(DIGITAL_L2)){
+				LA.move(-127);
+				RA.move(-127);
+			} else {
+				LA.move(0);
+				RA.move(0);
+			}
 		}
+	}
 }

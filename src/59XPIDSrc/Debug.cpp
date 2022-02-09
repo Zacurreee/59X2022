@@ -1,5 +1,5 @@
 #include "main.h"
-int DEBUG_MODE = 0;
+int DEBUG_MODE = 3;
 void printPosMaster(){
   Controller master(E_CONTROLLER_MASTER);
   Imu Inertial (ImuPort);

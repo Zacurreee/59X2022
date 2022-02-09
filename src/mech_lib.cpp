@@ -2,7 +2,7 @@
 #include "mech_lib.hpp"
 
 // driver prgrammes
-const double armHeights[] = {0,100,400,700, 200};
+const double armHeights[] = {0,100,45 0,650};
 double armTarg = armHeights[0], armKP = 1;
 bool tiltstate = true;
 bool armstate = true;
@@ -22,11 +22,6 @@ void armControl(void*ignore) {
     LA.move(armError*armKP);
     RA.move(armError*armKP);
 
-    if(armstate){
-      armClamp.set_value(LOW);
-    } else {
-      armClamp.set_value(HIGH);
-    }
 
     if(armDefault){
       setArmPos(0);
@@ -48,6 +43,17 @@ void armControl(void*ignore) {
   }
 }
 
+void armclampControl(void*ignore){
+  ADIDigitalOut armClamp(armClampPort);
+  while(true){
+    if(armstate){
+      armClamp.set_value(LOW);
+    } else {
+      armClamp.set_value(HIGH);
+    }
+  }
+}
+
 void tiltControl(void*ignore){
   ADIDigitalOut tilt(tiltPort);
 	ADIDigitalOut tiltClamp(tiltClampPort);
@@ -60,7 +66,7 @@ void tiltControl(void*ignore){
     } else {
       tiltClamp.set_value(LOW);
       tilt.set_value(LOW);
-      delay(1000);
+      delay(10);
       tiltClamp.set_value(HIGH);
     }
   }
